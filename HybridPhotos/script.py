@@ -1,4 +1,4 @@
-# python HybridPhotos/script.jpg -i1 Images/hp_einstein.jpg -i2 Images/hp_marilyn.jpg
+# python HybridPhotos/script.py -i1 Images/hp_einstein.jpg -i2 Images/hp_marilyn.jpg
 import argparse
 import numpy as np
 import cv2
@@ -70,7 +70,7 @@ args = vars(ap.parse_args())
 imgFirst = cv2.imread(args["first_image"], flags=cv2.IMREAD_GRAYSCALE)
 imgSecond = cv2.imread(args["second_image"], flags=cv2.IMREAD_GRAYSCALE)
 
-# Get height and width and resize second image if needed
+# Get height and width and resize second image to size of first if needed
 height, width = imgFirst.shape[:2]
 if imgSecond.shape[0] != height or imgSecond.shape[1] != width:
     imgSecond = cv2.resize(imgSecond, (width, height))
@@ -85,9 +85,9 @@ imgInS = np.float32(imgSecond)
 dftS = cv2.dft(imgInS, flags=cv2.DFT_COMPLEX_OUTPUT)
 dftS = np.fft.fftshift(dftS)
 
-# Create window with track bar
+# Create window with track bar, choose lesser of width/height for max radius
 cv2.namedWindow("Output")
-cv2.createTrackbar("Radius", "Output", 0, int(width/2), nothing)
+cv2.createTrackbar("Radius", "Output", 0, int(min(width, height)/2), nothing)
 
 ###############################################################
 
