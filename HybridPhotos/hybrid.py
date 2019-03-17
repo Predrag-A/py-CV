@@ -1,4 +1,4 @@
-# python HybridPhotos/script.py -i1 Images/hp_einstein.jpg -i2 Images/hp_marilyn.jpg
+# python HybridPhotos/hybrid.py -i1 Images/hp_einstein.jpg -i2 Images/hp_marilyn.jpg
 import argparse
 import numpy as np
 import cv2
