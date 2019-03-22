@@ -22,7 +22,7 @@ def trim(frame):
     return frame
 
 
-def stitch(image_a, image_b, ratio=0.75, thresh=4.0, show_matches=False):
+def stitch(image_a, image_b, ratio, thresh):
 
     kps_a, features_a = detect_and_describe(image_a)
     kps_b, features_b = detect_and_describe(image_b)
@@ -35,9 +35,6 @@ def stitch(image_a, image_b, ratio=0.75, thresh=4.0, show_matches=False):
     result = cv2.warpPerspective(image_a, h, (image_a.shape[1] + image_b.shape[1], image_a.shape[0]))
     result[0:image_b.shape[0], 0:image_b.shape[1]] = image_b
 
-    if show_matches:
-        vis = draw_matches(image_a, image_b, kps_a, kps_b, matches, status)
-        return result, vis
     return result
 
 
@@ -69,19 +66,12 @@ def match_key_points(key_pts_a, key_pts_b, features_a, features_b, ratio, thresh
     return None
 
 
-def draw_matches(img_a, img_b, kps_a, kps_b, matches, status):
-    h_a, w_a = img_a.shape[:2]
-    h_b, w_b = img_b.shape[:2]
-    visualization = np.zeros((max(h_a, h_b), w_a + w_b, 3), dtype="uint8")
-    visualization[0:h_a, 0:w_a] = img_a
-    visualization[0:h_b, w_a:] = img_b
-
-    for ((trainIdx, queryIdx), s) in zip(matches, status):
-        if s == 1:
-            pt_a = (int(kps_a[queryIdx][0]), int(kps_a[queryIdx][1]))
-            pt_b = (int(kps_b[trainIdx][0]) + w_a, int(kps_b[trainIdx][1]))
-            cv2.line(visualization, pt_a, pt_b, (0, 255, 0), 1)
-    return visualization
+def create_panorama(imgs, ratio=0.75, thresh=4.0):
+    res = None
+    for i in range(len(imgs) - 1, 0, -1):
+        res = stitch(imgs[i], imgs[i - 1], ratio, thresh)
+        imgs[i - 1] = res
+    return trim(res)
 
 
 ###############################################################
@@ -96,24 +86,22 @@ args = vars(ap.parse_args())
 imagePaths = sorted(list(paths.list_images(args["images"])))
 images = []
 
+# Load all images into array
 for imagePath in imagePaths:
     image = cv2.imread(imagePath)
     image = imutils.resize(image, width=400)
     images.append(image)
 
+# Generate panorama and show result
+imgOut = create_panorama(images)
+cv2.imshow("Result", imgOut)
+
+# Save image if specified
+if args["output_path"] is not None:
+    cv2.imwrite(args["output_path"], imgOut)
+    print(args["output_path"])
 
 ###############################################################
-
-for i in range(len(images)-1, 0, -1):
-    res, vis = stitch(images[i], images[i-1], show_matches=True)
-    images[i-1] = res
-    cv2.imshow(str(i) + " Result", res)
-    cv2.imshow(str(i) + " Vis", vis)
-
-###############################################################
-
-# cv2.imshow("Matches", vis)
-# cv2.imshow("Result", result)
 
 cv2.waitKey(0)
 cv2.destroyAllWindows()

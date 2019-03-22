@@ -57,13 +57,13 @@ def combine_frequencies(high_freq_img, low_freq_img, radius, show_spectrum):
 
 def create_hybrid(high_freq_img, low_freq_img, radius=10, show_spectrum=False):
     # Convert first image with Discrete Fourier Transform and shift quadrants
-    high_freq_img = np.float32(imgFirst)
-    dft_high = cv2.dft(high_freq_img, flags=cv2.DFT_COMPLEX_OUTPUT)
+    high_freq_float = np.float32(high_freq_img)
+    dft_high = cv2.dft(high_freq_float, flags=cv2.DFT_COMPLEX_OUTPUT)
     dft_high = np.fft.fftshift(dft_high)
 
     # Convert second image with Discrete Fourier Transform and shift quadrants
-    low_freq_img = np.float32(imgSecond)
-    dft_low = cv2.dft(low_freq_img, flags=cv2.DFT_COMPLEX_OUTPUT)
+    low_freq_float = np.float32(low_freq_img)
+    dft_low = cv2.dft(low_freq_float, flags=cv2.DFT_COMPLEX_OUTPUT)
     dft_low = np.fft.fftshift(dft_low)
 
     # Combine frequencies of two images and reverse quadrant shifts and DFT
