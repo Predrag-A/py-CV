@@ -55,6 +55,7 @@ def combine_frequencies(high_freq_img, low_freq_img, radius, show_spectrum):
     return high_removed + low_removed
 
 
+# Create hybrid image from two input grayscale images
 def create_hybrid(high_freq_img, low_freq_img, radius=10, show_spectrum=False):
     # Convert first image with Discrete Fourier Transform and shift quadrants
     high_freq_float = np.float32(high_freq_img)
