@@ -1,6 +1,5 @@
 # python Scripts/panorama.py -i Images/Panorama
 from imutils import paths
-import imutils
 import numpy as np
 import argparse
 import cv2
