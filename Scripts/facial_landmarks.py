@@ -5,6 +5,16 @@ import imutils
 import dlib
 import cv2
 
+
+# draw third eye, lab assignment
+def third_eye(points, img, color):
+    dist = points[42, 0] - points[39, 0]
+    eye_points = points[36:42]
+    for (x, y) in eye_points:
+        cv2.circle(img, (x + int(dist/2), y - dist), 3, color, -1)
+    return img
+
+
 # initialize Viola Jones face detector and then create the facial landmark predictor
 detector = cv2.CascadeClassifier("Data/haarcascade_frontalface_default.xml")
 predictor = dlib.shape_predictor("Data/shape_predictor_68_face_landmarks.dat")
@@ -14,8 +24,8 @@ cap = cv2.VideoCapture(0)
 ###############################################################
 
 while True:
-    ret, img = cap.read()
-    image = imutils.resize(img, width=500)
+    ret, image = cap.read()
+    image = imutils.resize(image, width=500)
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
     # detect faces in the grayscale image
@@ -46,6 +56,7 @@ while True:
         # and draw them on the image
         for (x, y) in shape:
             cv2.circle(image, (x, y), 1, (0, 0, 255), -1)
+        image = third_eye(shape, image, (255, 0, 0))
 
     # show the output image with the face detections + facial landmarks
     cv2.imshow("Output", image)
